@@ -1,130 +1,87 @@
-# Customer IQ Agents
+# Customer IQ Agent System
 
 ## Purpose
 
-Customer IQ is an agentic system for turning fragmented customer signals into reliable, structured intelligence for account teams.
+Customer IQ is a modular platform for building customer-specific intelligence agents inside this repository.
 
-It ingests signals such as meetings, notes, architecture artifacts, and cost data; maintains a durable view of customer state; and produces actionable insights that support planning, execution, and follow-up.
+The system ingests enterprise customer knowledge, stores it in structured context files, generates Customer IQ outputs, and exposes a lightweight interaction layer so account teams can ask grounded questions about each customer.
 
-## Primary Artifacts
+## Platform Components
 
-- `context/customer/<customer>.md` is the durable source of truth for account context.
-- `outputs/<customer>-iq.md` is the structured account intelligence output for account teams.
-- `.github/prompts/*.prompt.md` are reusable prompt-based skills for ingestion, analysis, delta tracking, and action planning.
-- `agents/*.md` are executable workflows for Copilot agents.
-- `tools/customer-iq/*` contains helper scripts that automate parsing, context updates, and delta generation.
+- `context/customer/<customer>.md` stores durable customer knowledge.
+- `outputs/<customer>-iq.md` stores generated Customer IQ output.
+- `agents/*.md` defines logical agents and their operating contracts.
+- `workflows/*.md` defines executable repo workflows.
+- `.github/prompts/*.prompt.md` stores reusable prompt skills.
+- `tools/customer-iq/*.py` provides CLI automation for ingestion, intelligence generation, orchestration, and interaction.
+- `webapp/` hosts the UI and HTTP endpoints for customer selection, IQ viewing, and chat.
+- `.github/workflows/*.yml` provides GitHub Actions automation.
+- `azure.yaml` and `webapp/Dockerfile` provide deployment scaffolding for Azure.
+
+## Logical Agents
+
+### ingestion-agent
+
+Owns the collection and normalization of customer signals from meetings, documents, notes, and cost inputs.
+
+### intelligence-agent
+
+Owns the production of Customer IQ output, including opportunities, Microsoft play, risks, and next actions.
+
+### interaction-agent
+
+Owns customer-facing question answering for the web app and API layer using stored context plus generated IQ output.
 
 ## Data Model
 
 ### Customer
 
-Represents the current known state of an account.
-
-**Core fields**
-
-- Name
-- Account identifiers
-- Industry or segment
-- Strategic priorities
-- Architecture context
-- Cost and consumption context
-- Key stakeholders
-- Source references
-- Last updated timestamp
+- name
+- aliases
+- account profile
+- strategic priorities
+- key stakeholders
+- architecture summary
+- cost and consumption summary
+- sources
+- last updated timestamp
 
 ### Signals
 
-Represents raw or lightly normalized evidence that informs customer understanding.
-
-**Core fields**
-
-- Signal type
-- Source file or tool
-- Source timestamp
-- Customer match
-- Evidence snippet
-- Confidence
-- Last ingested timestamp
+- signal type
+- source artifact
+- date or ingestion timestamp
+- evidence snippet
+- confidence
+- customer association
 
 ### Opportunities
 
-Represents potential areas for growth, acceleration, or engagement.
-
-**Core fields**
-
-- Opportunity title
-- Description
-- Associated customer
-- Supporting evidence
-- Stage or status
-- Priority
-- Owner
-- Next step
-- Expected impact
-- Last updated timestamp
+- title
+- why it matters
+- supporting evidence
+- confidence
+- owner or owner role
 
 ### Risks
 
-Represents blockers, gaps, or threats to success.
-
-**Core fields**
-
-- Risk title
-- Description
-- Associated customer or opportunity
-- Supporting evidence
-- Severity
-- Likelihood
-- Mitigation plan
-- Owner
-- Status
-- Last updated timestamp
+- title
+- impact
+- supporting evidence
+- mitigation need
+- missing information
 
 ### Actions
 
-Represents concrete follow-up work for the account team.
+- action
+- rationale
+- supporting signal
+- owner or owner role
+- status
 
-**Core fields**
+## Standard Customer Context Format
 
-- Action title
-- Description
-- Associated customer, opportunity, or risk
-- Triggering evidence
-- Owner
-- Due date
-- Status
-- Priority
-- Last updated timestamp
-
-### Deltas
-
-Represents meaningful change over time between two account states.
-
-**Core fields**
-
-- Compared artifact pair
-- New signals
-- Changed understanding
-- Removed or invalidated signals
-- Impacted opportunities, risks, or actions
-- Comparison timestamp
-
-## Signal Sources
-
-Approved signal sources include:
-
-- customer context files
-- meeting data from `tools/calendar/calendar-week.fsx`
-- notes and summaries
-- architecture artifacts
-- cost and consumption data
-- approved logs or operational exports
-
-When a source is tool-generated, preserve the raw output long enough to support traceability and re-processing.
-
-## Customer Context Format
-
-Each `context/customer/<customer>.md` file should converge toward this structure:
+Every `context/customer/<customer>.md` file should use this structure:
 
 ```md
 # <Customer Name>
@@ -138,54 +95,47 @@ Each `context/customer/<customer>.md` file should converge toward this structure
 ## Sources
 ```
 
-Agents may add subsections, but should preserve this overall layout so ingestion and delta tooling can work consistently.
+The file is the primary source of truth for the interaction and intelligence layers.
 
-## Workflow
+## Standard Customer IQ Output Format
 
-### 1. Ingest
+Each generated report must use these sections in order:
 
-- Collect raw customer signals from approved inputs such as meetings, notes, architecture documents, and cost data.
-- Use automation where possible, especially for recurring feeds such as calendar exports.
-- Preserve source metadata, timestamps, and provenance for every ingested item.
-- Store raw inputs without inventing missing facts.
+1. Executive Summary
+2. Current State
+3. Opportunities
+4. Microsoft Play
+5. Risks
+6. Next Actions
 
-### 2. Normalize
+Outputs are written to `outputs/<customer>-iq.md`.
 
-- Convert raw signals into consistent structured records.
-- Resolve entities across sources, including customers, stakeholders, opportunities, and risks.
-- Link every structured fact back to its originating context files or source references.
-- Deduplicate repeated facts before writing context updates.
-- Update `context/customer/<customer>.md` in a structured format rather than appending raw dumps.
+## Signal Sources
 
-### 3. Analyze
+Approved signal sources include:
 
-- Identify trends, opportunities, risks, blockers, and recommended actions from normalized data.
-- Compare new inputs to prior state to detect meaningful deltas over time.
-- Separate confirmed facts from inferred insights and keep both traceable.
-- Prefer automation for mechanical comparisons and use prompts for interpretation.
+- customer markdown context
+- meeting ingestion files
+- document ingestion files
+- cost analysis inputs
+- notes and manually added signals stored in repo
 
-### 4. Output
+If a signal is not present in repo artifacts, it is not a valid source for generated output.
 
-- Produce concise, actionable outputs for account teams.
-- Summarize current customer state, open opportunities, active risks, and recommended actions.
-- Include source-backed reasoning and highlight what changed since the last update.
-- When helpful, generate companion action plans or delta summaries alongside the main Customer IQ report.
+## Operating Principles
 
-## Recommended Prompt Skills
+- Do not hallucinate customer data.
+- Keep all logic inside the repository.
+- Prefer simple, working implementations over incomplete complexity.
+- Keep the system modular so ingestion, intelligence, interaction, UI, and deployment can evolve independently.
+- Preserve provenance and distinguish sourced facts from assumptions.
+- Track deltas over time in the customer context change log.
+- Avoid duplicating facts when merging new signals.
+- Make missing information explicit.
 
-- `customer-iq.prompt.md` for the core account report
-- `ingest.prompt.md` for merging new signals into customer context
-- `meeting-signals.prompt.md` for converting meeting output into reusable account signals
-- `delta-analysis.prompt.md` for change tracking
-- `action-plan.prompt.md` for prioritized follow-up actions
+## Execution Flow
 
-## Rules
-
-- Never hallucinate customer data.
-- Always use context files as the grounding source for customer understanding.
-- Track deltas over time so outputs show what changed, not just the current snapshot.
-- Preserve provenance for every important fact, insight, risk, and action.
-- When evidence is incomplete, state uncertainty explicitly instead of filling gaps.
-- Do not duplicate existing context when ingesting new signals.
-- Keep customer context structured so humans and scripts can both update it safely.
-- Prefer actionable insights tied to explicit evidence over generic account planning language.
+1. Ingestion updates `context/customer/<customer>.md`.
+2. Intelligence generation reads customer context and writes `outputs/<customer>-iq.md`.
+3. Interaction reads both context and generated IQ output to answer questions.
+4. Workflows and GitHub Actions orchestrate those steps for one customer or all customers.

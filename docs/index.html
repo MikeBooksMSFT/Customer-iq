@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customer IQ</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <div>
+        <h1>Customer IQ</h1>
+        <p>Static Customer IQ workspace for reviewing customer intelligence and chatting with a lightweight client-side interaction agent.</p>
+      </div>
+      <span class="badge">GitHub Pages</span>
+    </header>
+
+    <section class="panel controls">
+      <label for="customer">Customer</label>
+      <select id="customer"></select>
+      <button id="load-iq" type="button">Load Customer IQ</button>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Customer IQ</h2>
+        <pre id="iq-output">Loading...</pre>
+      </article>
+
+      <article class="panel">
+        <h2>Interaction Agent</h2>
+        <textarea id="question" rows="4" placeholder="Ask a question about the selected customer..."></textarea>
+        <button id="ask-agent" type="button">Ask Agent</button>
+        <pre id="agent-output">Ask about risks, opportunities, next actions, or current state.</pre>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Signals</h2>
+        <ul id="signals-list"></ul>
+      </article>
+      <article class="panel">
+        <h2>Change Log</h2>
+        <ul id="change-log-list"></ul>
+      </article>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

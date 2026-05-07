@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customer IQ</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Customer IQ</h1>
+      <p>Select a customer, review the current Customer IQ, and ask the interaction-agent a question.</p>
+    </header>
+
+    <section class="panel">
+      <label for="customer">Customer</label>
+      <select id="customer">
+        {% for customer in customers %}
+        <option value="{{ customer.slug }}">{{ customer.name }}</option>
+        {% endfor %}
+      </select>
+      <button id="load-iq" type="button">Load Customer IQ</button>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Customer IQ</h2>
+        <pre id="iq-output">Select a customer to load the current IQ output.</pre>
+      </article>
+
+      <article class="panel">
+        <h2>Interaction Agent</h2>
+        <textarea id="question" rows="4" placeholder="Ask a question about the selected customer..."></textarea>
+        <button id="send-question" type="button">Send</button>
+        <pre id="chat-output">Responses from the interaction-agent will appear here.</pre>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    async function loadIq() {
+      const customer = document.getElementById("customer").value;
+      const response = await fetch(`/api/customer/${customer}/iq`);
+      const payload = await response.json();
+      document.getElementById("iq-output").textContent = payload.iq || "No IQ available.";
+    }
+
+    async function sendQuestion() {
+      const customer = document.getElementById("customer").value;
+      const question = document.getElementById("question").value.trim();
+      if (!question) {
+        document.getElementById("chat-output").textContent = "Enter a question first.";
+        return;
+      }
+
+      const response = await fetch(`/api/customer/${customer}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+      });
+      const payload = await response.json();
+      document.getElementById("chat-output").textContent = payload.response || payload.error || "No response.";
+    }
+
+    document.getElementById("load-iq").addEventListener("click", loadIq);
+    document.getElementById("send-question").addEventListener("click", sendQuestion);
+    loadIq();
+  </script>
+</body>
+</html>

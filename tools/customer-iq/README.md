@@ -1,21 +1,24 @@
 # Customer IQ helper scripts
 
-These scripts automate the mechanical parts of Customer IQ so prompts can focus on interpretation.
+These scripts provide the execution layer for the Customer IQ platform.
 
 ## Scripts
 
-- `parse_calendar.py` parses `calendar-week.fsx` output and emits customer-relevant meeting signals.
-- `append_context.py` merges a markdown snippet into `context/customer/<customer>.md` using a stable section structure and a simple change log.
-- `delta_report.py` compares two markdown artifacts and emits a compact delta summary.
-- `run_ingestion.py` normalizes customer context files and ingests matching meeting files from `inputs/meetings/`.
-- `run_customer_iq.py` renders `outputs/<customer>-iq.md` from the current customer context.
+- `customer_iq_core.py` contains shared repo paths, context handling, IQ generation, and interaction logic.
+- `meeting_ingestion.py` ingests meeting signals.
+- `document_ingestion.py` ingests document signals.
+- `cost_analysis.py` ingests cost signals.
+- `run_ingestion.py` runs the ingestion-agent for one customer or all customers.
+- `run_customer_iq.py` runs the intelligence-agent.
+- `run_interaction.py` runs the interaction-agent for a single question.
+- `agent_runner.py` orchestrates ingestion and intelligence generation.
+- `append_context.py`, `delta_report.py`, and `parse_calendar.py` remain available as lower-level helpers.
 
 ## Example usage
 
 ```powershell
-python tools\customer-iq\parse_calendar.py --customer Walgreens --input outputs\walgreens-calendar.json
-python tools\customer-iq\append_context.py --customer Walgreens --context-file context\customer\walgreens.md --snippet-file outputs\walgreens-meetings.md --change-summary "Added weekly meeting signals"
-python tools\customer-iq\delta_report.py --previous outputs\walgreens-iq-prev.md --current outputs\walgreens-iq.md
 python tools\customer-iq\run_ingestion.py
 python tools\customer-iq\run_customer_iq.py
+python tools\customer-iq\run_interaction.py --customer walgreens --question "What are the next actions?"
+python tools\customer-iq\agent_runner.py --workflow agent-runner --customer all
 ```

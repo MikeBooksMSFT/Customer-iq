@@ -1,4 +1,4 @@
-name: Customer IQ
+name: Agent Runner
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  customer-iq:
+  run-agents:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,20 +26,8 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Read context
-        shell: bash
-        run: |
-          if [ "${{ inputs.customer }}" = "all" ]; then
-            ls context/customer
-          else
-            ls "context/customer/${{ inputs.customer }}.md"
-          fi
-
-      - name: Run ingestion-agent
-        run: python tools/customer-iq/run_ingestion.py --customer "${{ inputs.customer }}"
-
-      - name: Generate outputs
-        run: python tools/customer-iq/run_customer_iq.py --customer "${{ inputs.customer }}"
+      - name: Run agent-runner workflow
+        run: python tools/customer-iq/agent_runner.py --workflow agent-runner --customer "${{ inputs.customer }}"
 
       - name: Commit updated outputs
         shell: bash
@@ -51,5 +39,5 @@ jobs:
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "chore(customer-iq): refresh context and outputs"
+          git commit -m "chore(customer-iq): run agent workflow"
           git push
