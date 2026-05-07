@@ -1,0 +1,25 @@
+{
+  "name": "clawpilot-workflows-migration-public",
+  "sanitized": true,
+  "createdAt": "2026-05-06T10:56:35.6902354-04:00",
+  "skillCount": 18,
+  "fsxToolCount": 9,
+  "excludes": [
+    "agent.db",
+    "account CSV",
+    "account aliases",
+    "Power BI schema export",
+    "tokens",
+    "cache",
+    "credentials",
+    "M365 content",
+    "OneDrive documents"
+  ],
+  "preserves": [
+    "risk-first operating model",
+    "GHCP/GHAS workflow logic",
+    "skill instructions",
+    "FSX CLIs",
+    "agent-db schema/tooling"
+  ]
+}

@@ -1,0 +1,41 @@
+name: Customer IQ
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  customer-iq:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull latest repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Run ingestion scripts
+        run: python tools/customer-iq/run_ingestion.py
+
+      - name: Run Customer IQ workflow
+        run: python tools/customer-iq/run_customer_iq.py
+
+      - name: Commit updated outputs
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add context/customer outputs
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "chore(customer-iq): refresh context and outputs"
+          git push
