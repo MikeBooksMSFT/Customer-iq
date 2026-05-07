@@ -1,0 +1,69 @@
+{
+  "customer": "walgreens",
+  "customerName": "Walgreens",
+  "status": "available-with-validation-warning",
+  "source": "MSX search_opportunities snapshot",
+  "capturedAt": "2026-05-07T17:00:00Z",
+  "grounding": "Opportunity search by account name Walgreens returned active opportunities, but exact TPID 639155 still resolves to I-TRAX and must not be treated as fully validated.",
+  "notes": [
+    "This snapshot comes from opportunity search results for Walgreens-related accounts, not from a fully validated TPID-grounded account record.",
+    "Use this for directional visibility until the Walgreens TPID and MSX account ID are confirmed."
+  ],
+  "opportunities": [
+    {
+      "name": "FY26-ISD-Walgreens-Azure MACC Accelerate #AI Garage",
+      "value": "$4,000,000",
+      "closeDate": "2026-06-18",
+      "stage": "Inspire & Design",
+      "solutionArea": "Cloud and AI Platforms",
+      "salesPlay": "Innovate with Azure AI Apps and Agents",
+      "owner": "",
+      "msxId": "7-3FOKBB3AA7",
+      "opportunityId": "b7bca55a-15a9-f011-bbd3-6045bdef389c"
+    },
+    {
+      "name": "FY26-ISD-Walgreens-CCaaS Compete #AI BigBets",
+      "value": "$3,500,000",
+      "closeDate": "2026-10-14",
+      "stage": "Inspire & Design",
+      "solutionArea": "Cloud and AI Platforms",
+      "salesPlay": "Innovate with Azure AI Apps and Agents",
+      "owner": "",
+      "msxId": "7-3FP3YPZGCT",
+      "opportunityId": "2dd7a5b1-d0aa-f011-bbd3-7c1e5215a062"
+    },
+    {
+      "name": "FY26 - Walgreens - Synapse to Databricks Migration",
+      "value": "$2,105,576",
+      "closeDate": "2026-03-30",
+      "stage": "Inspire & Design",
+      "solutionArea": "Cloud and AI Platforms",
+      "salesPlay": "Unify Your Data Platform",
+      "owner": "",
+      "msxId": "7-3FQTDDHWSL",
+      "opportunityId": "25a851e1-37b0-f011-bbd3-7c1e52670273"
+    },
+    {
+      "name": "NN | Walgreens - Omni-Channel Customer Service",
+      "value": "$900,000",
+      "closeDate": "2027-02-28",
+      "stage": "Inspire & Design",
+      "solutionArea": "AI Business Solutions",
+      "salesPlay": "Sales Transformation with AI",
+      "owner": "",
+      "msxId": "7-3AC4QSCNWG",
+      "opportunityId": "b5e73780-438e-ee11-8179-6045bdeed520"
+    },
+    {
+      "name": "Inbound : Valorem Reply Modern Work : Walgreens Org-Wide M365 Copilot Implementation",
+      "value": "$540,000",
+      "closeDate": "2026-03-30",
+      "stage": "Listen & Consult",
+      "solutionArea": "AI Business Solutions",
+      "salesPlay": "Copilot and Agents at Work",
+      "owner": "",
+      "msxId": "7-3GOB2EJGLF",
+      "opportunityId": "1d8e79fa-2e0c-f111-8406-00224833ddb4"
+    }
+  ]
+}

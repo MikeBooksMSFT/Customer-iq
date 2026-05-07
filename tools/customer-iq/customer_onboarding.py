@@ -17,6 +17,7 @@ def interactive_values() -> dict[str, str]:
         "customer_name": customer_name,
         "tpid": prompt("TPID"),
         "msx_account_name": prompt("MSX account name", customer_name),
+        "msx_account_id": prompt("MSX account ID"),
         "msxi_key": prompt("MSXi customer key"),
         "msx_hyperlink": prompt("MSX hyperlink"),
         "sharepoint_site": prompt("SharePoint site URL"),
@@ -33,6 +34,7 @@ def main() -> None:
     parser.add_argument("--customer-name", help="Customer display name.")
     parser.add_argument("--tpid", default="", help="TPID.")
     parser.add_argument("--msx-account-name", default="", help="MSX account name.")
+    parser.add_argument("--msx-account-id", default="", help="MSX account ID.")
     parser.add_argument("--msxi-key", default="", help="MSXi customer key.")
     parser.add_argument("--msx-hyperlink", default="", help="MSX hyperlink.")
     parser.add_argument("--sharepoint-site", default="", help="SharePoint site URL.")
@@ -46,6 +48,7 @@ def main() -> None:
         "customer_name": args.customer_name or "",
         "tpid": args.tpid,
         "msx_account_name": args.msx_account_name,
+        "msx_account_id": args.msx_account_id,
         "msxi_key": args.msxi_key,
         "msx_hyperlink": args.msx_hyperlink,
         "sharepoint_site": args.sharepoint_site,

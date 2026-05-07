@@ -4,6 +4,7 @@
 
 - TPID: 1197953
 - MSX account name: Boots UK
+- MSX account ID: cb0983b7-c5e4-4aa4-8e94-17332ff7d7dc
 - MSXi customer key: 1197953
 - MSX hyperlink: pending validation
 - SharePoint site: pending validation

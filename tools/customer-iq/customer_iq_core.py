@@ -17,6 +17,9 @@ INPUTS_DIR = REPO_ROOT / "inputs"
 MEETINGS_DIR = INPUTS_DIR / "meetings"
 DOCUMENTS_DIR = INPUTS_DIR / "documents"
 COSTS_DIR = INPUTS_DIR / "costs"
+SHAREPOINT_DIR = INPUTS_DIR / "sharepoint"
+MSX_SNAPSHOTS_DIR = OUTPUT_DIR / "msx"
+CUSTOMER_CANDIDATES_FILE = REPO_ROOT / "context" / "customer-candidates.json"
 
 STANDARD_CONTEXT_SECTIONS = [
     "Metadata",
@@ -37,6 +40,7 @@ DEFAULT_CUSTOMERS: dict[str, dict[str, object]] = {
             "Metadata": [
                 "TPID: 639155",
                 "MSX account name: Walgreens",
+                "MSX account ID: pending validation",
                 "MSXi customer key: 639155",
                 "MSX hyperlink: pending validation",
                 "SharePoint site: pending validation",
@@ -84,6 +88,7 @@ DEFAULT_CUSTOMERS: dict[str, dict[str, object]] = {
             "Metadata": [
                 "TPID: 1197953",
                 "MSX account name: Boots UK",
+                "MSX account ID: cb0983b7-c5e4-4aa4-8e94-17332ff7d7dc",
                 "MSXi customer key: 1197953",
                 "MSX hyperlink: pending validation",
                 "SharePoint site: pending validation",
@@ -126,6 +131,39 @@ DEFAULT_CUSTOMERS: dict[str, dict[str, object]] = {
     },
 }
 
+DEFAULT_CUSTOMER_CANDIDATES = {
+    "generatedAt": "2026-05-07",
+    "customers": [
+        {
+            "query": "Walgreens",
+            "status": "candidate-review-required",
+            "notes": [
+                "Exact TPID lookup for 639155 returned I-TRAX, so Walgreens still needs explicit validation before treating that TPID as confirmed.",
+                "Name-based search returned multiple Walgreens account records."
+            ],
+            "candidates": [
+                {"source": "MSX Dataverse", "name": "Walgreens", "accountId": "ce321577-979f-4a29-80e2-003e4500f14c", "tpid": "", "selected": False},
+                {"source": "MSX Dataverse", "name": "WALGREENS", "accountId": "fefb9ce9-7b9a-44aa-a3ca-01461a2053fa", "tpid": "", "selected": False},
+                {"source": "MSX Dataverse", "name": "Walgreens", "accountId": "6bf19d34-bc45-4569-ab9b-01d93b4a33ba", "tpid": "", "selected": False},
+                {"source": "MSX Dataverse", "name": "Walgreens", "accountId": "05ff8b5d-3027-47b4-be3e-04e52e9bd532", "tpid": "", "selected": False},
+                {"source": "MSX Dataverse", "name": "Walgreens", "accountId": "4028cc78-0345-4856-86ae-0746d8d49838", "tpid": "", "selected": False}
+            ]
+        },
+        {
+            "query": "Boots",
+            "status": "candidate-selected-pending-site-validation",
+            "notes": [
+                "Boots UK was selected from MSX search candidates and exact lookup returned TPID 1197953 with an account record.",
+                "SharePoint and managed-site URLs still need validation."
+            ],
+            "candidates": [
+                {"source": "MSX Account Overview", "name": "Boots UK", "accountId": "cb0983b7-c5e4-4aa4-8e94-17332ff7d7dc", "tpid": "1197953", "selected": True},
+                {"source": "MSX Dataverse", "name": "Boots", "accountId": "7577f257-b5b2-f011-bbd3-7c1e520bce7a", "tpid": "", "selected": False}
+            ]
+        }
+    ]
+}
+
 
 def slugify_customer(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", value.strip().lower()).strip("-")
@@ -143,7 +181,7 @@ def normalize_customer_name(name: str, slug: str | None = None) -> str:
 
 
 def ensure_repo_structure() -> None:
-    for path in (CONTEXT_DIR, OUTPUT_DIR, WORKFLOWS_DIR, MEETINGS_DIR, DOCUMENTS_DIR, COSTS_DIR):
+    for path in (CONTEXT_DIR, OUTPUT_DIR, WORKFLOWS_DIR, MEETINGS_DIR, DOCUMENTS_DIR, COSTS_DIR, SHAREPOINT_DIR, MSX_SNAPSHOTS_DIR):
         path.mkdir(parents=True, exist_ok=True)
 
 
@@ -228,6 +266,7 @@ def build_customer_section_lines(
     *,
     tpid: str = "",
     msx_account_name: str = "",
+    msx_account_id: str = "",
     msxi_key: str = "",
     msx_hyperlink: str = "",
     sharepoint_site: str = "",
@@ -245,6 +284,7 @@ def build_customer_section_lines(
     if msx_account_name:
         metadata.append(f"MSX account name: {msx_account_name}")
         connections.append(f"MSX: grounded to {msx_account_name}{f' (TPID {tpid})' if tpid else ''}.")
+    metadata.append(f"MSX account ID: {msx_account_id}" if msx_account_id else "MSX account ID: pending validation")
     if msxi_key:
         metadata.append(f"MSXi customer key: {msxi_key}")
         connections.append(f"MSXi: grounded to customer key {msxi_key}.")
@@ -290,6 +330,10 @@ def context_file_for(customer_slug: str) -> Path:
 
 def output_file_for(customer_slug: str) -> Path:
     return OUTPUT_DIR / f"{customer_slug}-iq.md"
+
+
+def msx_snapshot_file_for(customer_slug: str) -> Path:
+    return MSX_SNAPSHOTS_DIR / f"{customer_slug}.json"
 
 
 def load_customer_context(customer_slug: str) -> dict[str, object]:
@@ -549,8 +593,17 @@ def discover_input_files(directory: Path, customer_slug: str) -> list[Path]:
     return [path for path in matches if path.is_file()]
 
 
+def discover_customer_files(directory: Path, customer_slug: str) -> list[Path]:
+    direct = discover_input_files(directory, customer_slug)
+    nested_dir = directory / customer_slug
+    nested = sorted(path for path in nested_dir.rglob("*") if path.is_file()) if nested_dir.exists() else []
+    return sorted({path.resolve(): path for path in (direct + nested)}.values(), key=lambda path: str(path).lower())
+
+
 def read_text_payload(path: Path) -> list[str]:
     suffix = path.suffix.lower()
+    if suffix in {".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx"}:
+        return [f"Unsupported binary document: {path.name}. Export the relevant content to .txt, .md, .csv, or .json before ingestion."]
     if suffix == ".json":
         data = json.loads(path.read_text(encoding="utf-8"))
         if isinstance(data, list):
@@ -570,11 +623,89 @@ def read_text_payload(path: Path) -> list[str]:
     return [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+def load_customer_candidates() -> dict[str, object]:
+    ensure_repo_structure()
+    if not CUSTOMER_CANDIDATES_FILE.exists():
+        CUSTOMER_CANDIDATES_FILE.write_text(json.dumps(DEFAULT_CUSTOMER_CANDIDATES, indent=2), encoding="utf-8")
+    return json.loads(CUSTOMER_CANDIDATES_FILE.read_text(encoding="utf-8"))
+
+
+def search_customer_candidates(query: str) -> dict[str, object]:
+    registry = load_customer_candidates()
+    q = query.strip().lower()
+    matches = []
+    for record in registry.get("customers", []):
+        record_query = str(record.get("query", "")).lower()
+        candidate_names = " ".join(str(item.get("name", "")) for item in record.get("candidates", []))
+        if not q or q in record_query or q in candidate_names.lower():
+            matches.append(record)
+    return {"query": query, "matches": matches}
+
+
+def metadata_value(customer_slug: str, label: str) -> str:
+    customer = load_customer_context(customer_slug)
+    for line in bulletize(customer["sections"].get("Metadata", [])):  # type: ignore[index]
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        if key.strip().lower() == label.strip().lower():
+            return value.strip()
+    return ""
+
+
+def load_msx_snapshot(customer_slug: str) -> dict[str, object]:
+    ensure_repo_structure()
+    path = msx_snapshot_file_for(customer_slug)
+    if not path.exists():
+        return {
+            "customer": customer_slug,
+            "status": "missing",
+            "message": "No MSX opportunity snapshot has been stored for this customer yet.",
+            "opportunities": [],
+        }
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data.setdefault("customer", customer_slug)
+    data.setdefault("status", "available")
+    data.setdefault("opportunities", [])
+    return data
+
+
+def access_summary() -> dict[str, object]:
+    return {
+        "publicStaticSite": {
+            "enabled": True,
+            "mode": "read-only",
+            "url": "https://mikebooksmsft.github.io/Customer-iq/",
+        },
+        "localFlaskApp": {
+            "enabled": True,
+            "mode": "read-write",
+            "notes": "Can create and update repo-backed customer profiles, view stored MSX opportunity snapshots, and generate Customer IQ locally.",
+        },
+        "liveSystemConnectors": {
+            "msx": "snapshot-backed view only; live MCP auth is not wired into the app runtime yet",
+            "msxi": "not wired into app runtime yet",
+            "sharepoint": "ingestion is repo-grounded from exported files, not a direct live connector yet",
+        },
+        "groundingFields": [
+            "TPID",
+            "MSX account name",
+            "MSX account ID",
+            "MSXi key",
+            "MSX hyperlink",
+            "SharePoint site",
+            "Managed sites",
+            "Validation status",
+        ],
+    }
+
+
 def upsert_customer_profile(
     *,
     customer_name: str,
     tpid: str = "",
     msx_account_name: str = "",
+    msx_account_id: str = "",
     msxi_key: str = "",
     msx_hyperlink: str = "",
     sharepoint_site: str = "",
@@ -590,6 +721,7 @@ def upsert_customer_profile(
     metadata_lines, connection_lines = build_customer_section_lines(
         tpid=tpid,
         msx_account_name=msx_account_name,
+        msx_account_id=msx_account_id,
         msxi_key=msxi_key,
         msx_hyperlink=msx_hyperlink,
         sharepoint_site=sharepoint_site,
@@ -609,5 +741,4 @@ def upsert_customer_profile(
 
     save_customer_context(customer)
     return customer
-
 

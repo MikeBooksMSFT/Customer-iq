@@ -5,6 +5,7 @@
     "Metadata": [
       "TPID: 1197953",
       "MSX account name: Boots UK",
+      "MSX account ID: cb0983b7-c5e4-4aa4-8e94-17332ff7d7dc",
       "MSXi customer key: 1197953",
       "MSX hyperlink: pending validation",
       "SharePoint site: pending validation",
@@ -51,17 +52,17 @@
   "sections": {
     "Document": [],
     "1. Executive Summary": [
-      "Based on the available repository context, Boots is associated with TPID: 1197953, MSX account name: Boots UK, and MSXi customer key: 1197953."
+      "Based on the available repository context, Boots is associated with TPID: 1197953, MSX account name: Boots UK, and MSX account ID: cb0983b7-c5e4-4aa4-8e94-17332ff7d7dc."
     ],
     "2. Current State": [
       "TPID: 1197953",
       "MSX account name: Boots UK",
+      "MSX account ID: cb0983b7-c5e4-4aa4-8e94-17332ff7d7dc",
       "MSXi customer key: 1197953",
       "MSX hyperlink: pending validation",
       "SharePoint site: pending validation",
       "Managed sites: pending validation",
       "Validation status: Boots UK selected from MSX search candidates; confirm with account team",
-      "MSX: grounded to Boots UK (TPID 1197953).",
       "Missing information should be treated as unknown rather than assumed."
     ],
     "3. Opportunities": [
@@ -80,5 +81,5 @@
       "Ingest the first set of signals before using the interaction-agent for planning decisions."
     ]
   },
-  "iq_markdown": "## 1. Executive Summary\n\nBased on the available repository context, Boots is associated with TPID: 1197953, MSX account name: Boots UK, and MSXi customer key: 1197953.\n\n## 2. Current State\n\n- TPID: 1197953\n- MSX account name: Boots UK\n- MSXi customer key: 1197953\n- MSX hyperlink: pending validation\n- SharePoint site: pending validation\n- Managed sites: pending validation\n- Validation status: Boots UK selected from MSX search candidates; confirm with account team\n- MSX: grounded to Boots UK (TPID 1197953).\n- Missing information should be treated as unknown rather than assumed.\n\n## 3. Opportunities\n\n- Gather initial account evidence before attempting opportunity qualification.\n- Use the first ingestion pass to identify strategic priorities, architecture signals, and decision-makers.\n\n## 4. Microsoft Play\n\nUse the strongest supported customer signals to align Azure, data modernization, and productivity or AI motions without overreaching beyond the available evidence.\n\n## 5. Risks\n\n- The account currently has insufficient evidence for confident opportunity or risk assessment.\n- Without sourced inputs, generated intelligence will remain generic and explicitly incomplete.\n\n## 6. Next Actions\n\n- Add initial meeting notes, account background, and architecture context for Boots.\n- Ingest the first set of signals before using the interaction-agent for planning decisions.\n"
+  "iq_markdown": "## 1. Executive Summary\n\nBased on the available repository context, Boots is associated with TPID: 1197953, MSX account name: Boots UK, and MSX account ID: cb0983b7-c5e4-4aa4-8e94-17332ff7d7dc.\n\n## 2. Current State\n\n- TPID: 1197953\n- MSX account name: Boots UK\n- MSX account ID: cb0983b7-c5e4-4aa4-8e94-17332ff7d7dc\n- MSXi customer key: 1197953\n- MSX hyperlink: pending validation\n- SharePoint site: pending validation\n- Managed sites: pending validation\n- Validation status: Boots UK selected from MSX search candidates; confirm with account team\n- Missing information should be treated as unknown rather than assumed.\n\n## 3. Opportunities\n\n- Gather initial account evidence before attempting opportunity qualification.\n- Use the first ingestion pass to identify strategic priorities, architecture signals, and decision-makers.\n\n## 4. Microsoft Play\n\nUse the strongest supported customer signals to align Azure, data modernization, and productivity or AI motions without overreaching beyond the available evidence.\n\n## 5. Risks\n\n- The account currently has insufficient evidence for confident opportunity or risk assessment.\n- Without sourced inputs, generated intelligence will remain generic and explicitly incomplete.\n\n## 6. Next Actions\n\n- Add initial meeting notes, account background, and architecture context for Boots.\n- Ingest the first set of signals before using the interaction-agent for planning decisions.\n"
 }

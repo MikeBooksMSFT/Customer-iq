@@ -30,8 +30,10 @@ Use `tools/customer-iq/` for the current platform:
 
 - onboarding customers
 - ingesting meeting, document, and cost signals
+- ingesting exported SharePoint content
 - generating Customer IQ
 - answering customer questions
+- surfacing stored MSX opportunity snapshots
 - exporting static site data
 
 ## Directory Notes

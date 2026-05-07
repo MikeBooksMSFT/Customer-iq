@@ -35,6 +35,14 @@ The repository already provides a working foundation:
 
 The public site is read-only. Persistent customer creation and validation happen through the local app or CLI.
 
+## Access Right Now
+
+- **Public Pages site:** read-only, repo-backed, no live system connectors
+- **Local Flask app:** read/write against repo files, includes onboarding plus candidate search
+- **MSX opportunity view:** available in the local app from stored snapshots grounded on current MSX results
+- **MSX/MSXi/SharePoint live runtime connectors:** not yet wired into the app runtime
+- **Candidate registry:** stored in `context/customer-candidates.json` for search and validation workflow
+
 ## Repository Structure
 
 ```text
@@ -81,6 +89,7 @@ Each customer should be grounded, when available, on:
 
 - TPID
 - MSX account name
+- MSX account ID
 - MSXi key
 - MSX hyperlink
 - SharePoint site URL
@@ -106,6 +115,22 @@ Stored under `.github/prompts/`:
 ```powershell
 python tools\customer-iq\run_ingestion.py --customer all
 ```
+
+To improve intelligence from SharePoint, export or copy relevant files into either:
+
+```text
+inputs\sharepoint\<customer>\
+```
+
+or files prefixed with the customer slug under:
+
+```text
+inputs\sharepoint\
+```
+
+Then rerun ingestion. The current SharePoint path is **repo-grounded**: Customer IQ reads exported files, contracts, notes, and loose text from that folder and converts them into signals, risks, opportunities, actions, and sources.
+
+Best current formats: `.txt`, `.md`, `.csv`, and `.json`. For `.pdf` or Office files, export the relevant content to text first.
 
 ### Run Customer IQ generation
 
@@ -165,6 +190,7 @@ The Flask web app provides:
 
 - a customer dropdown
 - a Customer IQ viewer
+- an MSX opportunity snapshot viewer
 - a chat interface backed by the interaction-agent
 - a customer onboarding form for TPID, SharePoint, MSX, and MSXi grounding
 
@@ -176,8 +202,9 @@ Use this flow when adding a customer:
 2. Capture the candidate TPID, MSX account name, MSXi key, MSX hyperlink, SharePoint site, and other managed-site URLs.
 3. Mark the validation status clearly if any identifier is still provisional.
 4. Save the profile through the onboarding CLI or local app.
-5. Run ingestion and Customer IQ generation.
-6. Publish or refresh the static site if needed.
+5. Use the candidate-search surface to review ambiguous MSX matches before confirming account IDs.
+6. Run ingestion and Customer IQ generation.
+7. Publish or refresh the static site if needed.
 
 ## GitHub Actions
 
@@ -211,6 +238,7 @@ These files provide a deployment foundation without requiring credentials at thi
 ## What Is Not Implemented Yet
 
 - live authenticated connectors to MSX, MSXi, or SharePoint from the hosted site
+- direct authenticated MSX or SharePoint calls from the Flask app runtime
 - automatic customer search-and-confirm UX inside the public Pages experience
 - production-grade persistence outside repo files
 - RBAC, secrets, and operational telemetry

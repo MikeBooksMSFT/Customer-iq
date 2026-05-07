@@ -6,6 +6,7 @@ from cost_analysis import analyze_customer_costs
 from customer_iq_core import ensure_repo_structure, list_customers, load_customer_context, save_customer_context
 from document_ingestion import ingest_customer_documents
 from meeting_ingestion import ingest_customer_meetings
+from sharepoint_ingestion import ingest_sharepoint_exports
 
 
 def run_ingestion(customer: str = "all") -> list[str]:
@@ -16,8 +17,9 @@ def run_ingestion(customer: str = "all") -> list[str]:
         save_customer_context(context)
         meeting_changed = ingest_customer_meetings(customer_slug)
         document_changed = ingest_customer_documents(customer_slug)
+        sharepoint_changed = ingest_sharepoint_exports(customer_slug)
         cost_changed = analyze_customer_costs(customer_slug)
-        if meeting_changed or document_changed or cost_changed:
+        if meeting_changed or document_changed or sharepoint_changed or cost_changed:
             updated.append(customer_slug)
     return updated
 

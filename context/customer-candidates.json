@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-05-07",
+  "customers": [
+    {
+      "query": "Walgreens",
+      "status": "candidate-review-required",
+      "notes": [
+        "Exact TPID lookup for 639155 returned I-TRAX, so Walgreens still needs explicit validation before treating that TPID as confirmed.",
+        "Name-based search returned multiple Walgreens account records."
+      ],
+      "candidates": [
+        {
+          "source": "MSX Dataverse",
+          "name": "Walgreens",
+          "accountId": "ce321577-979f-4a29-80e2-003e4500f14c",
+          "tpid": "",
+          "selected": false
+        },
+        {
+          "source": "MSX Dataverse",
+          "name": "WALGREENS",
+          "accountId": "fefb9ce9-7b9a-44aa-a3ca-01461a2053fa",
+          "tpid": "",
+          "selected": false
+        },
+        {
+          "source": "MSX Dataverse",
+          "name": "Walgreens",
+          "accountId": "6bf19d34-bc45-4569-ab9b-01d93b4a33ba",
+          "tpid": "",
+          "selected": false
+        },
+        {
+          "source": "MSX Dataverse",
+          "name": "Walgreens",
+          "accountId": "05ff8b5d-3027-47b4-be3e-04e52e9bd532",
+          "tpid": "",
+          "selected": false
+        },
+        {
+          "source": "MSX Dataverse",
+          "name": "Walgreens",
+          "accountId": "4028cc78-0345-4856-86ae-0746d8d49838",
+          "tpid": "",
+          "selected": false
+        }
+      ]
+    },
+    {
+      "query": "Boots",
+      "status": "candidate-selected-pending-site-validation",
+      "notes": [
+        "Boots UK was selected from MSX search candidates and exact lookup returned TPID 1197953 with an account record.",
+        "SharePoint and managed-site URLs still need validation."
+      ],
+      "candidates": [
+        {
+          "source": "MSX Account Overview",
+          "name": "Boots UK",
+          "accountId": "cb0983b7-c5e4-4aa4-8e94-17332ff7d7dc",
+          "tpid": "1197953",
+          "selected": true
+        },
+        {
+          "source": "MSX Dataverse",
+          "name": "Boots",
+          "accountId": "7577f257-b5b2-f011-bbd3-7c1e520bce7a",
+          "tpid": "",
+          "selected": false
+        }
+      ]
+    }
+  ]
+}

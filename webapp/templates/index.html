@@ -23,12 +23,26 @@
       <button id="load-iq" type="button">Load Customer IQ</button>
     </section>
 
+    <section class="grid">
+      <article class="panel">
+        <h2>Current Access</h2>
+        <ul id="access-list"></ul>
+      </article>
+      <article class="panel">
+        <h2>Search and Validate Candidates</h2>
+        <input id="search-query" type="text" placeholder="Search for a customer candidate">
+        <button id="search-customer" type="button">Search Candidates</button>
+        <pre id="search-output">Search candidate records to review what Customer IQ can validate today.</pre>
+      </article>
+    </section>
+
     <section class="panel">
       <h2>Add or Update Customer</h2>
       <div class="form-grid">
         <input id="new-customer-name" type="text" placeholder="Customer name">
         <input id="new-customer-tpid" type="text" placeholder="TPID">
         <input id="new-customer-msx" type="text" placeholder="MSX account name">
+        <input id="new-customer-msx-id" type="text" placeholder="MSX account ID">
         <input id="new-customer-msxi" type="text" placeholder="MSXi key">
         <input id="new-customer-msx-link" type="text" placeholder="MSX hyperlink">
         <input id="new-customer-sharepoint" type="text" placeholder="SharePoint site URL">
@@ -53,6 +67,11 @@
         <button id="send-question" type="button">Send</button>
         <pre id="chat-output">Responses from the interaction-agent will appear here.</pre>
       </article>
+    </section>
+
+    <section class="panel">
+      <h2>MSX Opportunities Snapshot</h2>
+      <pre id="msx-output">Select a customer to load the latest stored MSX opportunity snapshot.</pre>
     </section>
 
     <section class="grid">
@@ -93,13 +112,46 @@
 
     async function loadIq() {
       const customer = document.getElementById("customer").value;
-      const response = await fetch(`/api/customer/${customer}/iq`);
-      const payload = await response.json();
+      const [iqResponse, msxResponse] = await Promise.all([
+        fetch(`/api/customer/${customer}/iq`),
+        fetch(`/api/customer/${customer}/msx-opportunities`)
+      ]);
+      const payload = await iqResponse.json();
+      const msx = await msxResponse.json();
       document.getElementById("iq-output").textContent = payload.iq || "No IQ available.";
+      document.getElementById("msx-output").textContent = formatMsxSnapshot(msx);
       renderList("metadata-list", payload.context_sections?.Metadata || []);
       renderList("connections-list", payload.context_sections?.["System Connections"] || []);
       renderList("signals-list", payload.context_sections?.Signals || []);
       renderList("change-log-list", payload.context_sections?.["Change Log"] || []);
+    }
+
+    function formatMsxSnapshot(payload) {
+      if (!payload || payload.status === "missing") {
+        return payload?.message || "No MSX snapshot available.";
+      }
+      const lines = [
+        `Customer: ${payload.customerName || payload.customer || "Unknown"}`,
+        `Source: ${payload.source || "MSX snapshot"}`,
+        `Status: ${payload.status || "available"}`,
+        `Captured: ${payload.capturedAt || "unknown"}`,
+        `Grounding: ${payload.grounding || "not specified"}`,
+        ""
+      ];
+      (payload.notes || []).forEach((note) => lines.push(`- Note: ${note}`));
+      if (payload.notes && payload.notes.length) {
+        lines.push("");
+      }
+      (payload.opportunities || []).forEach((item, index) => {
+        lines.push(`${index + 1}. ${item.name}`);
+        lines.push(`   Value: ${item.value || "N/A"} | Close: ${item.closeDate || "N/A"} | Stage: ${item.stage || "N/A"}`);
+        lines.push(`   Solution Area: ${item.solutionArea || "N/A"} | Sales Play: ${item.salesPlay || "N/A"}`);
+        lines.push(`   Owner: ${item.owner || "N/A"} | MSX ID: ${item.msxId || "N/A"}`);
+        if (item.opportunityId) {
+          lines.push(`   Opportunity ID: ${item.opportunityId}`);
+        }
+      });
+      return lines.join("\n").trim();
     }
 
     async function sendQuestion() {
@@ -124,6 +176,7 @@
         customerName: document.getElementById("new-customer-name").value.trim(),
         tpid: document.getElementById("new-customer-tpid").value.trim(),
         msxAccountName: document.getElementById("new-customer-msx").value.trim(),
+        msxAccountId: document.getElementById("new-customer-msx-id").value.trim(),
         msxiKey: document.getElementById("new-customer-msxi").value.trim(),
         msxHyperlink: document.getElementById("new-customer-msx-link").value.trim(),
         sharepointSite: document.getElementById("new-customer-sharepoint").value.trim(),
@@ -145,9 +198,45 @@
       }
     }
 
+    async function loadAccess() {
+      const response = await fetch("/api/access");
+      const payload = await response.json();
+      const lines = [
+        `Public static site: ${payload.publicStaticSite.mode} (${payload.publicStaticSite.url})`,
+        `Local Flask app: ${payload.localFlaskApp.mode}`,
+        `Live MSX connector: ${payload.liveSystemConnectors.msx}`,
+        `Live MSXi connector: ${payload.liveSystemConnectors.msxi}`,
+        `Live SharePoint connector: ${payload.liveSystemConnectors.sharepoint}`
+      ];
+      renderList("access-list", lines);
+    }
+
+    async function searchCandidates() {
+      const query = document.getElementById("search-query").value.trim();
+      const response = await fetch(`/api/customer-search?q=${encodeURIComponent(query)}`);
+      const payload = await response.json();
+      if (!payload.matches || payload.matches.length === 0) {
+        document.getElementById("search-output").textContent = "No candidates found in the current registry.";
+        return;
+      }
+      const lines = [];
+      payload.matches.forEach((match) => {
+        lines.push(`Query: ${match.query}`);
+        lines.push(`Status: ${match.status}`);
+        (match.notes || []).forEach((note) => lines.push(`- Note: ${note}`));
+        (match.candidates || []).forEach((candidate) => {
+          lines.push(`- Candidate: ${candidate.name} | accountId=${candidate.accountId || "n/a"} | TPID=${candidate.tpid || "n/a"} | selected=${candidate.selected}`);
+        });
+        lines.push("");
+      });
+      document.getElementById("search-output").textContent = lines.join("\n").trim();
+    }
+
     document.getElementById("load-iq").addEventListener("click", loadIq);
     document.getElementById("send-question").addEventListener("click", sendQuestion);
     document.getElementById("save-customer").addEventListener("click", saveCustomer);
+    document.getElementById("search-customer").addEventListener("click", searchCandidates);
+    loadAccess();
     loadIq();
   </script>
 </body>

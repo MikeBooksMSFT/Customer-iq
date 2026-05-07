@@ -4,6 +4,7 @@
 
 - TPID: 639155
 - MSX account name: Walgreens
+- MSX account ID: pending validation
 - MSXi customer key: 639155
 - MSX hyperlink: pending validation
 - SharePoint site: pending validation

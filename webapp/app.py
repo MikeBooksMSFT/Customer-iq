@@ -12,10 +12,13 @@ if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
 
 from customer_iq_core import (  # noqa: E402
+    access_summary,
     list_customers,
     load_customer_context,
+    load_msx_snapshot,
     output_file_for,
     save_customer_iq,
+    search_customer_candidates,
     slugify_customer,
     upsert_customer_profile,
 )
@@ -39,6 +42,17 @@ def customers() -> object:
     return jsonify(customer_payload())
 
 
+@app.get("/api/access")
+def access() -> object:
+    return jsonify(access_summary())
+
+
+@app.get("/api/customer-search")
+def customer_search() -> object:
+    query = str(request.args.get("q", "")).strip()
+    return jsonify(search_customer_candidates(query))
+
+
 @app.get("/api/customer/<customer>/iq")
 def customer_iq(customer: str) -> object:
     slug = slugify_customer(customer)
@@ -56,6 +70,11 @@ def customer_iq(customer: str) -> object:
     )
 
 
+@app.get("/api/customer/<customer>/msx-opportunities")
+def customer_msx_opportunities(customer: str) -> object:
+    return jsonify(load_msx_snapshot(slugify_customer(customer)))
+
+
 @app.post("/api/customers")
 def create_customer() -> object:
     payload = request.get_json(silent=True) or {}
@@ -67,6 +86,7 @@ def create_customer() -> object:
         customer_name=name,
         tpid=str(payload.get("tpid", "")).strip(),
         msx_account_name=str(payload.get("msxAccountName", "")).strip(),
+        msx_account_id=str(payload.get("msxAccountId", "")).strip(),
         msxi_key=str(payload.get("msxiKey", "")).strip(),
         msx_hyperlink=str(payload.get("msxHyperlink", "")).strip(),
         sharepoint_site=str(payload.get("sharepointSite", "")).strip(),

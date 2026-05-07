@@ -1,0 +1,59 @@
+{
+  "customer": "boots",
+  "customerName": "Boots UK",
+  "status": "available",
+  "source": "MSX account overview pipeline snapshot",
+  "capturedAt": "2026-05-07T17:00:00Z",
+  "grounding": "Exact TPID 1197953 returned Boots UK account ID cb0983b7-c5e4-4aa4-8e94-17332ff7d7dc.",
+  "notes": [
+    "This snapshot is grounded on the validated Boots UK TPID and account record returned by MSX.",
+    "The app shows the stored snapshot; it is not yet a direct authenticated live MSX connector."
+  ],
+  "opportunities": [
+    {
+      "name": "Inbound: Dynatrace LLC : Boots Group Plc -- Sam Pattison Condor SFDC Platform",
+      "value": "$2,819,427",
+      "closeDate": "2025-11-18",
+      "stage": "Listen & Consult",
+      "solutionArea": "AI Business Solutions",
+      "salesPlay": "Not Applicable",
+      "owner": "Jim Lizotte"
+    },
+    {
+      "name": "FY26 - Boots UK - Renewal - 5 Years Unified Support Base",
+      "value": "$1,696,844",
+      "closeDate": "2026-05-31",
+      "stage": "Empower & Achieve",
+      "solutionArea": "Microsoft Unified",
+      "salesPlay": "Drive Cloud Success through Unified with Enhanced Solutions",
+      "owner": "Harvey Brown"
+    },
+    {
+      "name": "Boots UK - ISD - Agentic Transformation",
+      "value": "$668,126",
+      "closeDate": "2026-05-31",
+      "stage": "Inspire & Design",
+      "solutionArea": "Cloud and AI Platforms",
+      "salesPlay": "Innovate with Azure AI Apps and Agents",
+      "owner": "Steve Mahoney"
+    },
+    {
+      "name": "Inbound : Rubrik : EMEA GB FY26 Rubrik BCDR / Zero Trust Data 006VI00000oHM49",
+      "value": "$540,000",
+      "closeDate": "2025-11-28",
+      "stage": "Listen & Consult",
+      "solutionArea": "Security",
+      "salesPlay": "Not Applicable",
+      "owner": "Jeff Hall"
+    },
+    {
+      "name": "NN | Boots Copilot Agent for Pharmacists",
+      "value": "$50,000",
+      "closeDate": "2027-05-27",
+      "stage": "Listen & Consult",
+      "solutionArea": "AI Business Solutions",
+      "salesPlay": "Copilot and Agents at Work",
+      "owner": "Jeff Hall"
+    }
+  ]
+}
