@@ -14,6 +14,38 @@ function iqText(payload) {
   return payload.iq_markdown || "No Customer IQ output available.";
 }
 
+function formatMsxSnapshot(snapshot) {
+  if (!snapshot || snapshot.status === "missing") {
+    return snapshot?.message || "No MSX snapshot available.";
+  }
+
+  const lines = [
+    `Customer: ${snapshot.customerName || snapshot.customer || "Unknown"}`,
+    `Source: ${snapshot.source || "MSX snapshot"}`,
+    `Status: ${snapshot.status || "available"}`,
+    `Captured: ${snapshot.capturedAt || "unknown"}`,
+    `Grounding: ${snapshot.grounding || "not specified"}`,
+    "",
+  ];
+
+  (snapshot.notes || []).forEach((note) => lines.push(`- Note: ${note}`));
+  if (snapshot.notes && snapshot.notes.length) {
+    lines.push("");
+  }
+
+  (snapshot.opportunities || []).forEach((item, index) => {
+    lines.push(`${index + 1}. ${item.name}`);
+    lines.push(`   Value: ${item.value || "N/A"} | Close: ${item.closeDate || "N/A"} | Stage: ${item.stage || "N/A"}`);
+    lines.push(`   Solution Area: ${item.solutionArea || "N/A"} | Sales Play: ${item.salesPlay || "N/A"}`);
+    lines.push(`   Owner: ${item.owner || "N/A"} | MSX ID: ${item.msxId || "N/A"}`);
+    if (item.opportunityId) {
+      lines.push(`   Opportunity ID: ${item.opportunityId}`);
+    }
+  });
+
+  return lines.join("\n").trim();
+}
+
 function renderList(elementId, items) {
   const root = document.getElementById(elementId);
   root.innerHTML = "";
@@ -78,6 +110,7 @@ async function loadCustomer(slug) {
   }
   const payload = customerData[slug];
   document.getElementById("iq-output").textContent = iqText(payload);
+  document.getElementById("msx-output").textContent = formatMsxSnapshot(payload.msx_snapshot);
   renderList("metadata-list", payload.context_sections?.Metadata || []);
   renderList("connections-list", payload.context_sections?.["System Connections"] || []);
   renderList("signals-list", payload.context_sections?.Signals || []);
@@ -109,4 +142,5 @@ async function boot() {
 
 boot().catch((error) => {
   document.getElementById("iq-output").textContent = `Failed to load site data: ${error.message}`;
+  document.getElementById("msx-output").textContent = `Failed to load site data: ${error.message}`;
 });

@@ -8,6 +8,7 @@ from customer_iq_core import (
     iq_sections,
     list_customers,
     load_customer_context,
+    load_msx_snapshot,
     output_file_for,
     save_customer_iq,
 )
@@ -35,6 +36,7 @@ def export_site_data(customer: str = "all") -> list[str]:
             "context_sections": context["sections"],
             "sections": iq_sections(slug),
             "iq_markdown": output_path.read_text(encoding="utf-8"),
+            "msx_snapshot": load_msx_snapshot(slug),
         }
         (DATA_DIR / f"{slug}.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
         index_payload.append({"slug": slug, "name": str(context["name"])})
