@@ -79,6 +79,18 @@ python tools\customer-iq\agent_runner.py --workflow agent-runner --customer all
 python tools\customer-iq\run_interaction.py --customer walgreens --question "What are the top risks?"
 ```
 
+### Add or update a customer profile
+
+```powershell
+python tools\customer-iq\customer_onboarding.py --interactive
+```
+
+Or non-interactively:
+
+```powershell
+python tools\customer-iq\customer_onboarding.py --customer-name "New Customer" --tpid 123456 --msx-account-name "New Customer" --msxi-key 123456 --sharepoint-site "https://tenant.sharepoint.com/sites/new-customer" --validation-status "Validated with account team"
+```
+
 ### Run the web app
 
 ```powershell
@@ -100,6 +112,7 @@ The Flask web app provides:
 - a customer dropdown
 - a Customer IQ viewer
 - a chat interface backed by the interaction-agent
+- a customer onboarding form for TPID, SharePoint, MSX, and MSXi grounding
 
 ## GitHub Actions
 
@@ -129,5 +142,6 @@ These files provide a deployment foundation without requiring credentials at thi
 ## Development Notes
 
 - All generated output is grounded only in repo-local context.
+- Customer onboarding should capture TPID, MSX account name, MSXi key, SharePoint site, and validation status whenever available.
 - Missing information is called out explicitly.
 - The current implementation is intentionally simple and modular so it can be extended safely.

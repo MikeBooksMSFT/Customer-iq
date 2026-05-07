@@ -11,7 +11,14 @@ TOOLS_DIR = REPO_ROOT / "tools" / "customer-iq"
 if str(TOOLS_DIR) not in sys.path:
     sys.path.insert(0, str(TOOLS_DIR))
 
-from customer_iq_core import list_customers, output_file_for, save_customer_iq, slugify_customer  # noqa: E402
+from customer_iq_core import (  # noqa: E402
+    list_customers,
+    load_customer_context,
+    output_file_for,
+    save_customer_iq,
+    slugify_customer,
+    upsert_customer_profile,
+)
 from run_interaction import run_interaction  # noqa: E402
 
 
@@ -38,7 +45,36 @@ def customer_iq(customer: str) -> object:
     output_path = output_file_for(slug)
     if not output_path.exists():
         save_customer_iq(slug)
-    return jsonify({"customer": slug, "iq": output_path.read_text(encoding="utf-8")})
+    context = load_customer_context(slug)
+    return jsonify(
+        {
+            "customer": slug,
+            "iq": output_path.read_text(encoding="utf-8"),
+            "context_sections": context["sections"],
+            "name": context["name"],
+        }
+    )
+
+
+@app.post("/api/customers")
+def create_customer() -> object:
+    payload = request.get_json(silent=True) or {}
+    name = str(payload.get("customerName", "")).strip()
+    if not name:
+        return jsonify({"error": "customerName is required"}), 400
+
+    customer = upsert_customer_profile(
+        customer_name=name,
+        tpid=str(payload.get("tpid", "")).strip(),
+        msx_account_name=str(payload.get("msxAccountName", "")).strip(),
+        msxi_key=str(payload.get("msxiKey", "")).strip(),
+        sharepoint_site=str(payload.get("sharepointSite", "")).strip(),
+        validation_status=str(payload.get("validationStatus", "")).strip(),
+        aliases=str(payload.get("aliases", "")).strip(),
+        notes=str(payload.get("notes", "")).strip(),
+    )
+    save_customer_iq(str(customer["slug"]))
+    return jsonify({"customer": customer["slug"], "name": customer["name"]})
 
 
 @app.post("/api/customer/<customer>/chat")

@@ -1,5 +1,18 @@
 # Walgreens
 
+## Metadata
+
+- TPID: 639155
+- MSX account name: Walgreens
+- MSXi customer key: 639155
+- SharePoint site: pending validation
+- Validation status: MSX candidate identified; SharePoint site still required
+
+## System Connections
+
+- MSX: grounded to Walgreens (TPID 639155).
+- MSXi: grounded to customer key 639155.
+
 ## Overview
 
 - Large retail and pharmacy company.
@@ -10,6 +23,7 @@
 - Existing repo context references SAP BW, Databricks, and Azure in the architecture.
 - Existing repo context references exploration of AI, Copilot, and data modernization.
 - Named stakeholders, budget, and timeline are not yet stored in repo context.
+- Walgreens matched from MSX search results.
 
 ## Opportunities
 
@@ -29,6 +43,8 @@
 ## Change Log
 
 - 2026-05-07: Seeded structured Walgreens context for Customer IQ platform initialization.
+- 2026-05-07: Added TPID-grounded metadata and source-system placeholders for onboarding.
+- 2026-05-07: Updated onboarding metadata
 
 ## Sources
 

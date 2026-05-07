@@ -1,13 +1,17 @@
 ## 1. Executive Summary
 
-Based on the available repository context, Boots is associated with Placeholder customer record for Boots, Customer IQ is ready to store sourced customer evidence for this account, and No meeting, document, or cost signals have been ingested yet.
+Based on the available repository context, Boots is associated with TPID: 1197953, MSX account name: Boots UK, and MSXi customer key: 1197953.
 
 ## 2. Current State
 
+- TPID: 1197953
+- MSX account name: Boots UK
+- MSXi customer key: 1197953
+- SharePoint site: pending validation
+- Validation status: Boots UK selected from MSX search candidates; confirm with account team
+- MSX: grounded to Boots UK (TPID 1197953).
+- MSXi: grounded to customer key 1197953.
 - Placeholder customer record for Boots.
-- Customer IQ is ready to store sourced customer evidence for this account.
-- No meeting, document, or cost signals have been ingested yet.
-- No architecture, stakeholder, or initiative details are currently stored in repo context.
 - Missing information should be treated as unknown rather than assumed.
 
 ## 3. Opportunities

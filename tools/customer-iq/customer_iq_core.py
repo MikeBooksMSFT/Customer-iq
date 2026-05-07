@@ -19,6 +19,8 @@ DOCUMENTS_DIR = INPUTS_DIR / "documents"
 COSTS_DIR = INPUTS_DIR / "costs"
 
 STANDARD_CONTEXT_SECTIONS = [
+    "Metadata",
+    "System Connections",
     "Overview",
     "Signals",
     "Opportunities",
@@ -32,6 +34,18 @@ DEFAULT_CUSTOMERS: dict[str, dict[str, object]] = {
     "walgreens": {
         "name": "Walgreens",
         "sections": {
+            "Metadata": [
+                "TPID: 639155",
+                "MSX account name: Walgreens",
+                "MSXi customer key: 639155",
+                "SharePoint site: pending validation",
+                "Validation status: MSX candidate identified; SharePoint site still required.",
+            ],
+            "System Connections": [
+                "MSX: candidate matched to Walgreens (TPID 639155).",
+                "MSXi: expected to use TPID 639155 as the grounding identifier.",
+                "SharePoint: site URL not yet captured in repository context.",
+            ],
             "Overview": [
                 "Large retail and pharmacy company.",
                 "Customer IQ is currently tracking digital transformation, AI exploration, and data modernization themes.",
@@ -64,6 +78,18 @@ DEFAULT_CUSTOMERS: dict[str, dict[str, object]] = {
     "boots": {
         "name": "Boots",
         "sections": {
+            "Metadata": [
+                "TPID: 1197953",
+                "MSX account name: Boots UK",
+                "MSXi customer key: 1197953",
+                "SharePoint site: pending validation",
+                "Validation status: Boots UK selected from MSX search candidates; confirm TPID and site URL with the account team.",
+            ],
+            "System Connections": [
+                "MSX: candidate matched to Boots UK (TPID 1197953).",
+                "MSXi: expected to use TPID 1197953 as the grounding identifier after validation.",
+                "SharePoint: site URL not yet captured in repository context.",
+            ],
             "Overview": [
                 "Placeholder customer record for Boots.",
                 "Customer IQ is ready to store sourced customer evidence for this account.",
@@ -192,6 +218,41 @@ def render_context(customer_name: str, sections: dict[str, list[str]]) -> str:
     return "\n".join(parts).rstrip() + "\n"
 
 
+def build_customer_section_lines(
+    *,
+    tpid: str = "",
+    msx_account_name: str = "",
+    msxi_key: str = "",
+    sharepoint_site: str = "",
+    validation_status: str = "",
+    aliases: str = "",
+) -> tuple[list[str], list[str]]:
+    metadata: list[str] = []
+    connections: list[str] = []
+
+    if tpid:
+        metadata.append(f"TPID: {tpid}")
+        if not msxi_key:
+            msxi_key = tpid
+    if msx_account_name:
+        metadata.append(f"MSX account name: {msx_account_name}")
+        connections.append(f"MSX: grounded to {msx_account_name}{f' (TPID {tpid})' if tpid else ''}.")
+    if msxi_key:
+        metadata.append(f"MSXi customer key: {msxi_key}")
+        connections.append(f"MSXi: grounded to customer key {msxi_key}.")
+    metadata.append(f"SharePoint site: {sharepoint_site}" if sharepoint_site else "SharePoint site: pending validation")
+    if sharepoint_site:
+        connections.append(f"SharePoint: source site configured as {sharepoint_site}.")
+    else:
+        connections.append("SharePoint: site URL not yet captured in repository context.")
+    if aliases:
+        metadata.append(f"Aliases: {aliases}")
+    if validation_status:
+        metadata.append(f"Validation status: {validation_status}")
+
+    return dedupe_preserve(metadata), dedupe_preserve(connections)
+
+
 def default_customer_record(customer_slug: str) -> dict[str, object]:
     template = DEFAULT_CUSTOMERS.get(
         customer_slug,
@@ -279,7 +340,7 @@ def sentence_list(items: list[str]) -> str:
 def gather_facts(customer: dict[str, object]) -> list[str]:
     sections: dict[str, list[str]] = customer["sections"]  # type: ignore[assignment]
     facts: list[str] = []
-    for name in ("Overview", "Signals", "Opportunities", "Risks", "Actions"):
+    for name in ("Metadata", "System Connections", "Overview", "Signals", "Opportunities", "Risks", "Actions"):
         facts.extend(bulletize(sections.get(name, [])))
     return dedupe_preserve(facts)
 
@@ -352,7 +413,12 @@ def generate_customer_iq(customer_slug: str) -> str:
     facts = gather_facts(customer)
     sections: dict[str, list[str]] = customer["sections"]  # type: ignore[assignment]
     summary_facts = facts[:3]
-    current_state = dedupe_preserve(bulletize(sections.get("Overview", [])) + bulletize(sections.get("Signals", [])))[:6]
+    current_state = dedupe_preserve(
+        bulletize(sections.get("Metadata", []))
+        + bulletize(sections.get("System Connections", []))
+        + bulletize(sections.get("Overview", []))
+        + bulletize(sections.get("Signals", []))
+    )[:8]
     opportunities = generate_opportunities(customer, facts)
     risks = generate_risks(customer, facts)
     actions = generate_actions(customer, facts)
@@ -423,6 +489,9 @@ def answer_customer_question(customer_slug: str, question: str) -> str:
     if "risk" in prompt:
         relevant = bulletize(iq.get("5. Risks", [])) or generate_risks(customer, facts)
         heading = "Top risks"
+    elif "tpid" in prompt or "sharepoint" in prompt or "msx" in prompt or "msxi" in prompt or "site" in prompt:
+        relevant = bulletize(customer["sections"].get("Metadata", [])) + bulletize(customer["sections"].get("System Connections", []))  # type: ignore[index]
+        heading = "Customer system profile"
     elif "opportun" in prompt or "play" in prompt:
         relevant = bulletize(iq.get("3. Opportunities", [])) or generate_opportunities(customer, facts)
         heading = "Top opportunities"
@@ -483,3 +552,112 @@ def read_text_payload(path: Path) -> list[str]:
                     rows.append(", ".join(entries))
             return rows
     return [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def upsert_customer_profile(
+    *,
+    customer_name: str,
+    tpid: str = "",
+    msx_account_name: str = "",
+    msxi_key: str = "",
+    sharepoint_site: str = "",
+    validation_status: str = "",
+    aliases: str = "",
+    notes: str = "",
+) -> dict[str, object]:
+    slug = slugify_customer(customer_name)
+    customer = load_customer_context(slug)
+    customer["name"] = normalize_customer_name(customer_name, slug)
+
+    metadata_lines, connection_lines = build_customer_section_lines(
+        tpid=tpid,
+        msx_account_name=msx_account_name,
+        msxi_key=msxi_key,
+        sharepoint_site=sharepoint_site,
+        validation_status=validation_status,
+        aliases=aliases,
+    )
+
+    sections: dict[str, list[str]] = customer["sections"]  # type: ignore[assignment]
+    sections["Metadata"] = metadata_lines or sections.get("Metadata", [])
+    sections["System Connections"] = connection_lines or sections.get("System Connections", [])
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    append_unique_lines(customer, "Change Log", [f"{timestamp}: Updated customer onboarding profile"])
+    if notes:
+        append_unique_lines(customer, "Signals", [notes])
+
+    save_customer_context(customer)
+    return customer
+
+
+def build_customer_section_lines(
+    *,
+    tpid: str = "",
+    msx_account_name: str = "",
+    msxi_key: str = "",
+    sharepoint_site: str = "",
+    validation_status: str = "",
+    aliases: str = "",
+) -> tuple[list[str], list[str]]:
+    metadata = []
+    connections = []
+
+    if tpid:
+        metadata.append(f"TPID: {tpid}")
+        if not msxi_key:
+            msxi_key = tpid
+    if msx_account_name:
+        metadata.append(f"MSX account name: {msx_account_name}")
+        connections.append(f"MSX: grounded to {msx_account_name}{f' (TPID {tpid})' if tpid else ''}.")
+    if msxi_key:
+        metadata.append(f"MSXi customer key: {msxi_key}")
+        connections.append(f"MSXi: grounded to customer key {msxi_key}.")
+    if sharepoint_site:
+        metadata.append(f"SharePoint site: {sharepoint_site}")
+        connections.append(f"SharePoint: source site configured as {sharepoint_site}.")
+    else:
+        metadata.append("SharePoint site: pending validation")
+    if aliases:
+        metadata.append(f"Aliases: {aliases}")
+    if validation_status:
+        metadata.append(f"Validation status: {validation_status}")
+
+    return dedupe_preserve(metadata), dedupe_preserve(connections)
+
+
+def upsert_customer_profile(
+    *,
+    customer_name: str,
+    tpid: str = "",
+    msx_account_name: str = "",
+    msxi_key: str = "",
+    sharepoint_site: str = "",
+    validation_status: str = "",
+    aliases: str = "",
+    notes: str = "",
+) -> dict[str, object]:
+    slug = slugify_customer(customer_name)
+    customer = load_customer_context(slug)
+    customer["name"] = normalize_customer_name(customer_name, slug)
+    metadata_lines, connection_lines = build_customer_section_lines(
+        tpid=tpid,
+        msx_account_name=msx_account_name,
+        msxi_key=msxi_key,
+        sharepoint_site=sharepoint_site,
+        validation_status=validation_status,
+        aliases=aliases,
+    )
+
+    sections: dict[str, list[str]] = customer["sections"]  # type: ignore[assignment]
+    if metadata_lines:
+        sections["Metadata"] = dedupe_preserve(metadata_lines)
+    if connection_lines:
+        sections["System Connections"] = dedupe_preserve(connection_lines)
+    if notes:
+        append_unique_lines(customer, "Signals", [notes], "Updated onboarding metadata")
+    else:
+        append_unique_lines(customer, "Change Log", [f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}: Updated onboarding metadata"])
+
+    save_customer_context(customer)
+    return customer

@@ -23,6 +23,22 @@
       <button id="load-iq" type="button">Load Customer IQ</button>
     </section>
 
+    <section class="panel">
+      <h2>Add or Update Customer</h2>
+      <div class="form-grid">
+        <input id="new-customer-name" type="text" placeholder="Customer name">
+        <input id="new-customer-tpid" type="text" placeholder="TPID">
+        <input id="new-customer-msx" type="text" placeholder="MSX account name">
+        <input id="new-customer-msxi" type="text" placeholder="MSXi key">
+        <input id="new-customer-sharepoint" type="text" placeholder="SharePoint site URL">
+        <input id="new-customer-aliases" type="text" placeholder="Aliases">
+        <input id="new-customer-validation" type="text" placeholder="Validation status">
+        <input id="new-customer-notes" type="text" placeholder="Search note or onboarding comment">
+      </div>
+      <button id="save-customer" type="button">Save Customer Profile</button>
+      <pre id="save-output">Use this form to add a new customer or validate TPID, SharePoint, MSX, and MSXi details.</pre>
+    </section>
+
     <section class="grid">
       <article class="panel">
         <h2>Customer IQ</h2>
@@ -36,14 +52,52 @@
         <pre id="chat-output">Responses from the interaction-agent will appear here.</pre>
       </article>
     </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Metadata</h2>
+        <ul id="metadata-list"></ul>
+      </article>
+
+      <article class="panel">
+        <h2>System Connections</h2>
+        <ul id="connections-list"></ul>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Signals</h2>
+        <ul id="signals-list"></ul>
+      </article>
+
+      <article class="panel">
+        <h2>Change Log</h2>
+        <ul id="change-log-list"></ul>
+      </article>
+    </section>
   </main>
 
   <script>
+    function renderList(id, items) {
+      const root = document.getElementById(id);
+      root.innerHTML = "";
+      (items && items.length ? items : ["No data available."]).forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        root.appendChild(li);
+      });
+    }
+
     async function loadIq() {
       const customer = document.getElementById("customer").value;
       const response = await fetch(`/api/customer/${customer}/iq`);
       const payload = await response.json();
       document.getElementById("iq-output").textContent = payload.iq || "No IQ available.";
+      renderList("metadata-list", payload.context_sections?.Metadata || []);
+      renderList("connections-list", payload.context_sections?.["System Connections"] || []);
+      renderList("signals-list", payload.context_sections?.Signals || []);
+      renderList("change-log-list", payload.context_sections?.["Change Log"] || []);
     }
 
     async function sendQuestion() {
@@ -63,8 +117,33 @@
       document.getElementById("chat-output").textContent = payload.response || payload.error || "No response.";
     }
 
+    async function saveCustomer() {
+      const payload = {
+        customerName: document.getElementById("new-customer-name").value.trim(),
+        tpid: document.getElementById("new-customer-tpid").value.trim(),
+        msxAccountName: document.getElementById("new-customer-msx").value.trim(),
+        msxiKey: document.getElementById("new-customer-msxi").value.trim(),
+        sharepointSite: document.getElementById("new-customer-sharepoint").value.trim(),
+        aliases: document.getElementById("new-customer-aliases").value.trim(),
+        validationStatus: document.getElementById("new-customer-validation").value.trim(),
+        notes: document.getElementById("new-customer-notes").value.trim()
+      };
+
+      const response = await fetch("/api/customers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      document.getElementById("save-output").textContent = result.error || `Saved ${result.name} (${result.customer})`;
+      if (!result.error) {
+        location.reload();
+      }
+    }
+
     document.getElementById("load-iq").addEventListener("click", loadIq);
     document.getElementById("send-question").addEventListener("click", sendQuestion);
+    document.getElementById("save-customer").addEventListener("click", saveCustomer);
     loadIq();
   </script>
 </body>

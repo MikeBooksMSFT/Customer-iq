@@ -78,6 +78,8 @@ async function loadCustomer(slug) {
   }
   const payload = customerData[slug];
   document.getElementById("iq-output").textContent = iqText(payload);
+  renderList("metadata-list", payload.context_sections?.Metadata || []);
+  renderList("connections-list", payload.context_sections?.["System Connections"] || []);
   renderList("signals-list", payload.context_sections?.Signals || []);
   renderList("change-log-list", payload.context_sections?.["Change Log"] || []);
   document.getElementById("agent-output").textContent = "Ask about risks, opportunities, next actions, or current state.";

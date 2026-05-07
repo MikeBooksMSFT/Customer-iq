@@ -86,6 +86,8 @@ Every `context/customer/<customer>.md` file should use this structure:
 ```md
 # <Customer Name>
 
+## Metadata
+## System Connections
 ## Overview
 ## Signals
 ## Opportunities
@@ -96,6 +98,19 @@ Every `context/customer/<customer>.md` file should use this structure:
 ```
 
 The file is the primary source of truth for the interaction and intelligence layers.
+
+## Customer Onboarding Requirements
+
+Every customer profile should capture, when available:
+
+- TPID
+- MSX account name
+- MSXi key or grounding identifier
+- SharePoint site URL
+- validation status
+- aliases or alternate names
+
+If a system identifier comes from search rather than confirmed account data, mark it as pending validation.
 
 ## Standard Customer IQ Output Format
 
@@ -115,6 +130,8 @@ Outputs are written to `outputs/<customer>-iq.md`.
 Approved signal sources include:
 
 - customer markdown context
+- TPID-grounded MSX or MSXi references stored in repo context
+- SharePoint site references stored in repo context
 - meeting ingestion files
 - document ingestion files
 - cost analysis inputs
@@ -132,6 +149,7 @@ If a signal is not present in repo artifacts, it is not a valid source for gener
 - Track deltas over time in the customer context change log.
 - Avoid duplicating facts when merging new signals.
 - Make missing information explicit.
+- Ground system connections on stable identifiers such as TPID and SharePoint site URL whenever possible.
 
 ## Execution Flow
 
