@@ -7,11 +7,11 @@ Based on the available repository context, Boots is associated with TPID: 119795
 - TPID: 1197953
 - MSX account name: Boots UK
 - MSXi customer key: 1197953
+- MSX hyperlink: pending validation
 - SharePoint site: pending validation
+- Managed sites: pending validation
 - Validation status: Boots UK selected from MSX search candidates; confirm with account team
 - MSX: grounded to Boots UK (TPID 1197953).
-- MSXi: grounded to customer key 1197953.
-- Placeholder customer record for Boots.
 - Missing information should be treated as unknown rather than assumed.
 
 ## 3. Opportunities

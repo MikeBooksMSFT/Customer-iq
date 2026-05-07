@@ -1,107 +1,49 @@
-# Clawpilot Workflows Migration Bundle
+# Tools
 
-This bundle contains a portable Clawpilot workflow system: custom skills plus FSX command-line tools for account, Power BI, MSX, email, Teams, calendar, and follow-up workflows.
+This directory contains the execution layer for Customer IQ.
 
-The operating philosophy is intentionally preserved: risk-first account work, license/seat movement checks, renewal/churn detection, stakeholder gap detection, evidence-first summaries, and concrete next actions.
+## Vision
 
-## Contents
+The tools layer should eventually connect Customer IQ to grounded enterprise systems such as:
 
-```text
-clawpilot-workflows-migration/
-  README.md
-  install.ps1
-  manifest.json
-  m-skills/                 # Custom Clawpilot skills
-  fsx-tools/                # F# script CLIs and support files
-    msx-cli.fsx
-    pbi-cli.fsx
-    msx-filter.fsx
-    calendar-week.fsx
-    email-inbox.fsx
-    followups-aging.fsx
-    teams-scripts/
-    agent-db/               # agent_db.py + schema.sql only; no live database
-```
+- MSX
+- MSXi
+- SharePoint
+- customer documents and notes
+- meeting feeds
+- cost and consumption sources
 
-## What is intentionally not included
+Those connections should be anchored on stable customer identifiers like TPID and validated source URLs.
 
-This public-facing bundle excludes live/customer-specific data:
+## Current State
 
-- No `agent.db`
-- No account list CSV
-- No account aliases file
-- No Power BI schema export
-- No email, calendar, Teams, token, cache, credential, or OneDrive content
+Today the tools directory contains two categories of assets:
 
-Some tools expect the recipient to provide their own local support files after install, such as an account list CSV. Use your team's approved source of account metadata and permissions.
+1. **Customer IQ Python tooling** under `tools/customer-iq/`
+2. **Legacy or reference utilities** such as the existing FSX scripts under this folder
 
-## Requirements on the recipient machine
+The active platform path for Customer IQ is the Python tooling, not the older migration-bundle description that previously lived in this README.
 
-1. Clawpilot installed.
-2. .NET SDK available so `dotnet fsi` can run `.fsx` files.
-3. Azure CLI installed and signed in with access to the required resources:
-   ```powershell
-   az login
-   ```
-4. Set `MSX_RESOURCE_URL` if using MSX/Dynamics commands, for example `$env:MSX_RESOURCE_URL="https://YOUR-DYNAMICS-ORG.crm.dynamics.com"`.
-5. Python 3 if the recipient wants to initialize the optional local `agent.db`.
-6. Microsoft 365 auth/permissions inside Clawpilot for email, calendar, Teams, and file workflows.
+## Customer IQ Tools
 
-## Install
+Use `tools/customer-iq/` for the current platform:
 
-From PowerShell in the unzipped folder:
+- onboarding customers
+- ingesting meeting, document, and cost signals
+- generating Customer IQ
+- answering customer questions
+- exporting static site data
 
-```powershell
-Set-ExecutionPolicy -Scope Process Bypass -Force
-.\install.ps1 -BackupExisting -InitializeAgentDb
-```
+## Directory Notes
 
-What the installer does:
+- `customer-iq/` — current Customer IQ platform tooling
+- `calendar/`, `calendar-week.fsx`, `email-inbox.fsx`, `teams-scripts/`, `msx-cli.fsx`, `pbi-cli.fsx` — legacy or adjacent utilities that may inform future integrations
+- `agent-db/` — local database helper assets retained from earlier tool experiments
 
-1. Copies `m-skills\*` into `%USERPROFILE%\.copilot\m-skills`.
-2. Copies `fsx-tools\*` into `%USERPROFILE%\.copilot\m-skills\fsx-builder\tools`.
-3. Optionally creates a fresh local `agent.db` under the installed FSX tools folder.
+## Recommended Direction
 
-Use `-BackupExisting` if the recipient already has local skills. The backup is written next to their current `m-skills` folder.
+When extending the platform:
 
-## Add your team's account metadata
-
-If your workflows need account matching, place your approved account list at:
-
-```powershell
-$env:USERPROFILE\.copilot\m-skills\fsx-builder\tools\accounts.csv
-```
-
-If a script expects a differently named file, either update the script to use `accounts.csv` or pass the script's supported `--accounts-csv` option where available.
-
-## Test after install
-
-Run these commands from any PowerShell window:
-
-```powershell
-dotnet fsi "$env:USERPROFILE\.copilot\m-skills\fsx-builder\tools\msx-cli.fsx" -- -h
-dotnet fsi "$env:USERPROFILE\.copilot\m-skills\fsx-builder\tools\pbi-cli.fsx"
-```
-
-If `az` auth is required for a command, run `az login` first.
-
-## Recommended Clawpilot usage
-
-After install, restart Clawpilot or reload skills if the app supports skill refresh. Then use the orchestrator skill:
-
-```text
-/run <account name>
-```
-
-The account workflows are intentionally risk-first: they check license movement, cancellations, true-downs, renewal risk, usage decay, stakeholder gaps, and concrete next actions before summarizing.
-
-## Updating the bundle later
-
-Update the canonical files first:
-
-```text
-%USERPROFILE%\.copilot\m-skills\fsx-builder\tools
-%USERPROFILE%\.copilot\m-skills
-```
-
-Then recreate this export zip. Do not hand-edit installed recipient copies unless you want configuration drift, which is basically entropy wearing a badge.
+1. prefer adding new runtime logic under `tools/customer-iq/`
+2. keep system integration logic grounded on TPID / account metadata
+3. treat older FSX scripts as optional references unless they are explicitly wired into the current flow

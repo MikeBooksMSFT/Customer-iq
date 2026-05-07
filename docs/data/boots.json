@@ -6,12 +6,16 @@
       "TPID: 1197953",
       "MSX account name: Boots UK",
       "MSXi customer key: 1197953",
+      "MSX hyperlink: pending validation",
       "SharePoint site: pending validation",
+      "Managed sites: pending validation",
       "Validation status: Boots UK selected from MSX search candidates; confirm with account team"
     ],
     "System Connections": [
       "MSX: grounded to Boots UK (TPID 1197953).",
-      "MSXi: grounded to customer key 1197953."
+      "MSXi: grounded to customer key 1197953.",
+      "SharePoint: site URL not yet captured in repository context.",
+      "Managed sites: no validated managed-site URLs are stored yet."
     ],
     "Overview": [
       "Placeholder customer record for Boots.",
@@ -37,7 +41,8 @@
     "Change Log": [
       "2026-05-07: Seeded placeholder Boots context for multi-customer Customer IQ support.",
       "2026-05-07: Added TPID-grounded metadata and source-system placeholders for onboarding.",
-      "2026-05-07: Updated onboarding metadata"
+      "2026-05-07: Updated onboarding metadata",
+      "2026-05-07: Updated customer onboarding profile"
     ],
     "Sources": [
       "Placeholder repository initialization record."
@@ -52,11 +57,11 @@
       "TPID: 1197953",
       "MSX account name: Boots UK",
       "MSXi customer key: 1197953",
+      "MSX hyperlink: pending validation",
       "SharePoint site: pending validation",
+      "Managed sites: pending validation",
       "Validation status: Boots UK selected from MSX search candidates; confirm with account team",
       "MSX: grounded to Boots UK (TPID 1197953).",
-      "MSXi: grounded to customer key 1197953.",
-      "Placeholder customer record for Boots.",
       "Missing information should be treated as unknown rather than assumed."
     ],
     "3. Opportunities": [
@@ -75,5 +80,5 @@
       "Ingest the first set of signals before using the interaction-agent for planning decisions."
     ]
   },
-  "iq_markdown": "## 1. Executive Summary\n\nBased on the available repository context, Boots is associated with TPID: 1197953, MSX account name: Boots UK, and MSXi customer key: 1197953.\n\n## 2. Current State\n\n- TPID: 1197953\n- MSX account name: Boots UK\n- MSXi customer key: 1197953\n- SharePoint site: pending validation\n- Validation status: Boots UK selected from MSX search candidates; confirm with account team\n- MSX: grounded to Boots UK (TPID 1197953).\n- MSXi: grounded to customer key 1197953.\n- Placeholder customer record for Boots.\n- Missing information should be treated as unknown rather than assumed.\n\n## 3. Opportunities\n\n- Gather initial account evidence before attempting opportunity qualification.\n- Use the first ingestion pass to identify strategic priorities, architecture signals, and decision-makers.\n\n## 4. Microsoft Play\n\nUse the strongest supported customer signals to align Azure, data modernization, and productivity or AI motions without overreaching beyond the available evidence.\n\n## 5. Risks\n\n- The account currently has insufficient evidence for confident opportunity or risk assessment.\n- Without sourced inputs, generated intelligence will remain generic and explicitly incomplete.\n\n## 6. Next Actions\n\n- Add initial meeting notes, account background, and architecture context for Boots.\n- Ingest the first set of signals before using the interaction-agent for planning decisions.\n"
+  "iq_markdown": "## 1. Executive Summary\n\nBased on the available repository context, Boots is associated with TPID: 1197953, MSX account name: Boots UK, and MSXi customer key: 1197953.\n\n## 2. Current State\n\n- TPID: 1197953\n- MSX account name: Boots UK\n- MSXi customer key: 1197953\n- MSX hyperlink: pending validation\n- SharePoint site: pending validation\n- Managed sites: pending validation\n- Validation status: Boots UK selected from MSX search candidates; confirm with account team\n- MSX: grounded to Boots UK (TPID 1197953).\n- Missing information should be treated as unknown rather than assumed.\n\n## 3. Opportunities\n\n- Gather initial account evidence before attempting opportunity qualification.\n- Use the first ingestion pass to identify strategic priorities, architecture signals, and decision-makers.\n\n## 4. Microsoft Play\n\nUse the strongest supported customer signals to align Azure, data modernization, and productivity or AI motions without overreaching beyond the available evidence.\n\n## 5. Risks\n\n- The account currently has insufficient evidence for confident opportunity or risk assessment.\n- Without sourced inputs, generated intelligence will remain generic and explicitly incomplete.\n\n## 6. Next Actions\n\n- Add initial meeting notes, account background, and architecture context for Boots.\n- Ingest the first set of signals before using the interaction-agent for planning decisions.\n"
 }

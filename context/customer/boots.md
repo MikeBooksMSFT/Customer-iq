@@ -5,13 +5,17 @@
 - TPID: 1197953
 - MSX account name: Boots UK
 - MSXi customer key: 1197953
+- MSX hyperlink: pending validation
 - SharePoint site: pending validation
+- Managed sites: pending validation
 - Validation status: Boots UK selected from MSX search candidates; confirm with account team
 
 ## System Connections
 
 - MSX: grounded to Boots UK (TPID 1197953).
 - MSXi: grounded to customer key 1197953.
+- SharePoint: site URL not yet captured in repository context.
+- Managed sites: no validated managed-site URLs are stored yet.
 
 ## Overview
 
@@ -44,6 +48,7 @@
 - 2026-05-07: Seeded placeholder Boots context for multi-customer Customer IQ support.
 - 2026-05-07: Added TPID-grounded metadata and source-system placeholders for onboarding.
 - 2026-05-07: Updated onboarding metadata
+- 2026-05-07: Updated customer onboarding profile
 
 ## Sources
 

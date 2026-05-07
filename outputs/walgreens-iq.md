@@ -7,11 +7,11 @@ Based on the available repository context, Walgreens is associated with TPID: 63
 - TPID: 639155
 - MSX account name: Walgreens
 - MSXi customer key: 639155
+- MSX hyperlink: pending validation
 - SharePoint site: pending validation
+- Managed sites: pending validation
 - Validation status: MSX candidate identified; SharePoint site still required
 - MSX: grounded to Walgreens (TPID 639155).
-- MSXi: grounded to customer key 639155.
-- Large retail and pharmacy company.
 - Missing information should be treated as unknown rather than assumed.
 
 ## 3. Opportunities

@@ -5,13 +5,17 @@
 - TPID: 639155
 - MSX account name: Walgreens
 - MSXi customer key: 639155
+- MSX hyperlink: pending validation
 - SharePoint site: pending validation
+- Managed sites: pending validation
 - Validation status: MSX candidate identified; SharePoint site still required
 
 ## System Connections
 
 - MSX: grounded to Walgreens (TPID 639155).
 - MSXi: grounded to customer key 639155.
+- SharePoint: site URL not yet captured in repository context.
+- Managed sites: no validated managed-site URLs are stored yet.
 
 ## Overview
 
@@ -45,6 +49,7 @@
 - 2026-05-07: Seeded structured Walgreens context for Customer IQ platform initialization.
 - 2026-05-07: Added TPID-grounded metadata and source-system placeholders for onboarding.
 - 2026-05-07: Updated onboarding metadata
+- 2026-05-07: Updated customer onboarding profile
 
 ## Sources
 

@@ -18,7 +18,9 @@ def interactive_values() -> dict[str, str]:
         "tpid": prompt("TPID"),
         "msx_account_name": prompt("MSX account name", customer_name),
         "msxi_key": prompt("MSXi customer key"),
+        "msx_hyperlink": prompt("MSX hyperlink"),
         "sharepoint_site": prompt("SharePoint site URL"),
+        "managed_sites": prompt("Managed sites (comma-separated URLs or names)"),
         "validation_status": prompt("Validation status", "Needs validation"),
         "aliases": prompt("Aliases"),
         "notes": prompt("Search note or onboarding comment"),
@@ -32,7 +34,9 @@ def main() -> None:
     parser.add_argument("--tpid", default="", help="TPID.")
     parser.add_argument("--msx-account-name", default="", help="MSX account name.")
     parser.add_argument("--msxi-key", default="", help="MSXi customer key.")
+    parser.add_argument("--msx-hyperlink", default="", help="MSX hyperlink.")
     parser.add_argument("--sharepoint-site", default="", help="SharePoint site URL.")
+    parser.add_argument("--managed-sites", default="", help="Managed sites, URLs, or related grounded sources.")
     parser.add_argument("--validation-status", default="", help="Validation status.")
     parser.add_argument("--aliases", default="", help="Aliases.")
     parser.add_argument("--notes", default="", help="Optional note stored in Signals.")
@@ -43,7 +47,9 @@ def main() -> None:
         "tpid": args.tpid,
         "msx_account_name": args.msx_account_name,
         "msxi_key": args.msxi_key,
+        "msx_hyperlink": args.msx_hyperlink,
         "sharepoint_site": args.sharepoint_site,
+        "managed_sites": args.managed_sites,
         "validation_status": args.validation_status,
         "aliases": args.aliases,
         "notes": args.notes,
